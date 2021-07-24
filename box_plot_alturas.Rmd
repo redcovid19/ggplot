@@ -1,0 +1,44 @@
+---
+title: "Box-plot Alturas"
+author: "ABC - Estatística"
+Date: 24/07/2021
+output:
+  rmdformats::material:
+    highlight: kate
+---
+# Carregando pacotes
+```{r,message=FALSE}
+library(ggplot2)
+library(dplyr)
+```
+# Importando base de dados
+```{r}
+url <- "https://drive.google.com/uc?export=download&id=1l1bT98q2hSWouBEmjzidCXsnzLAjnhJW"
+atletas <- read.csv(url)
+```
+# Selecionando dados
+```{r}
+alturas = atletas |> 
+  select(Year,Sport,Height)|>
+  filter(Sport==c("Basketball","Football","Gymnastics")&Year==c(1936,2016)&!is.na(Height))
+```
+# Traduzindo categorias e coluna
+```{r}
+alturas$Sport=as.factor(alturas$Sport)
+levels(alturas$Sport)[levels(alturas$Sport)=="Basketball"] <- "Basquete"
+levels(alturas$Sport)[levels(alturas$Sport)=="Football"] <- "Futebol"
+levels(alturas$Sport)[levels(alturas$Sport)=="Gymnastics"] <- "Ginástica"
+colnames(alturas)[3] <- "Altura"
+```
+# Contruindo gráfico
+```{r}
+  ggplot(alturas) + 
+  aes(x=reorder(Sport, Altura), y=Altura, fill=Sport)+
+  geom_boxplot(varwidth = TRUE) +
+  facet_wrap(~Year) + 
+  labs(title = "Altura dos Atletas",
+         x = "",
+         y = "Altura(cm)",
+         caption='Fonte: Kaggle')+
+  theme(legend.position = "none")
+```
